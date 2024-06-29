@@ -82,21 +82,26 @@ fn addPhysfs(
         .target = target,
         .optimize = optimize,
     });
+    var files = std.ArrayList([]const u8).init(b.allocator);
+    files.appendSlice(&.{
+        "src/physfs.c",
+        "src/physfs_archiver_dir.c",
+        "src/physfs_archiver_unpacked.c",
+        "src/physfs_archiver_zip.c",
+        "src/physfs_byteorder.c",
+        "src/physfs_unicode.c",
+        "src/physfs_platform_posix.c",
+        "src/physfs_platform_unix.c",
+        "src/physfs_platform_windows.c",
+        "src/physfs_platform_haiku.cpp",
+        "src/physfs_platform_android.c",
+    }) catch @panic("OOM");
+    if (target.result.isDarwin()) {
+        files.append("src/physfs_platform_apple.m") catch @panic("OOM");
+    }
     lib.addCSourceFiles(.{
         .root = root,
-        .files = &.{
-            "src/physfs.c",
-            "src/physfs_archiver_dir.c",
-            "src/physfs_archiver_unpacked.c",
-            "src/physfs_archiver_zip.c",
-            "src/physfs_byteorder.c",
-            "src/physfs_unicode.c",
-            "src/physfs_platform_posix.c",
-            "src/physfs_platform_unix.c",
-            "src/physfs_platform_windows.c",
-            "src/physfs_platform_haiku.cpp",
-            "src/physfs_platform_android.c",
-        },
+        .files = files.toOwnedSlice() catch @panic("OOM"),
         .flags = &.{
             "-DPHYSFS_SUPPORTS_DEFAULT=0",
             "-DPHYSFS_SUPPORTS_ZIP=1",
