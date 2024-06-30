@@ -6,10 +6,22 @@ pub fn build(b: *Build) void {
     const optimize = b.standardOptimizeOption(.{});
 
     const VVVVVV_dep = b.dependency("VVVVVV", .{});
-    const sdl_dep = b.dependency("sdl", .{
-        .target = target,
-        .optimize = optimize,
-    });
+    const sdl_dep = switch (target.result.os.tag) {
+        .linux => b.dependency("sdl", .{
+            .target = target,
+            .optimize = optimize,
+            // doesn't support SDL_RENDERER_TARGETTEXTURE
+            .render_driver_ogl_es = false,
+            // doesn't support SDL_RENDERER_ACCELERATED
+            .render_driver_software = false,
+        }),
+        else => b.dependency("sdl", .{
+            .target = target,
+            .optimize = optimize,
+            // TODO: disable render_driver_software here as well if/when SDL supports it
+            //.render_driver_software = false,
+        }),
+    };
     const physfs_dep = b.dependency("physfs", .{});
     const zipcmdline_dep = b.dependency("zipcmdline", .{});
     const makeandplay_dep = b.dependency("makeandplay", .{});
