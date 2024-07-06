@@ -7,8 +7,8 @@
             .hash = "12205a24de32aa7d0c9857320b6fb5d644b7c7af1d60dff4f5e0257881f9b0c98f3d",
         },
         .sdl = .{
-            .url = "https://github.com/allyourcodebase/SDL/archive/b77d252f3f33e4dc1c24f03f5dd24e809f1cd0a3.tar.gz",
-            .hash = "1220db3c3040b03da7ace818c382a99196b58b539d035c4ab37585c9b7763b12b2ad",
+            .url = "https://github.com/allyourcodebase/SDL/archive/ccb56626ec75638457ed36d45a53683371d909c5.tar.gz",
+            .hash = "122092989e6ddcdb5c876cb3b7518474e638dede0e557006e8f39d51bcb1833bc848",
         },
         // TODO: add a command that maybe checks and/or updates this dependency if/when we update VVVVVV
         .physfs = .{
