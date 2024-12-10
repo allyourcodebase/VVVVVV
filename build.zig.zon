@@ -7,10 +7,9 @@
             .hash = "12205a24de32aa7d0c9857320b6fb5d644b7c7af1d60dff4f5e0257881f9b0c98f3d",
         },
         .sdl = .{
-            .url = "https://github.com/allyourcodebase/SDL/archive/ccb56626ec75638457ed36d45a53683371d909c5.tar.gz",
-            .hash = "122092989e6ddcdb5c876cb3b7518474e638dede0e557006e8f39d51bcb1833bc848",
+            .url = "git+https://github.com/allyourcodebase/SDL#fe896e655b24890f5e13ba8b740ebe0e20c4a23b",
+            .hash = "1220503f94b77f9c057139384cc37f020c291208f7bdee60285c71b315961cf717bd",
         },
-        // TODO: add a command that maybe checks and/or updates this dependency if/when we update VVVVVV
         .physfs = .{
             .url = "https://github.com/icculus/physfs/archive/bfa7997c671957eb0a340ff1cf3c634e6269904a.tar.gz",
             .hash = "12206d6eb8b5166a4ab0ae2552c847c6f85cf3400e60dfe3943c526a735dd203dde7",
