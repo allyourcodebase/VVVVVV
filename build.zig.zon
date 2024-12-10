@@ -7,8 +7,8 @@
             .hash = "12205a24de32aa7d0c9857320b6fb5d644b7c7af1d60dff4f5e0257881f9b0c98f3d",
         },
         .sdl = .{
-            .url = "git+https://github.com/allyourcodebase/SDL#fe896e655b24890f5e13ba8b740ebe0e20c4a23b",
-            .hash = "1220503f94b77f9c057139384cc37f020c291208f7bdee60285c71b315961cf717bd",
+            .url = "git+https://github.com/allyourcodebase/SDL#7e4fc30b201d266f197fef4153f7e046bd189a7c",
+            .hash = "1220c57b0bec66a2378e90cd7a79e36f9e7f60c02acca769ab3e6f974d4ef6766418",
         },
         .physfs = .{
             .url = "https://github.com/icculus/physfs/archive/bfa7997c671957eb0a340ff1cf3c634e6269904a.tar.gz",
