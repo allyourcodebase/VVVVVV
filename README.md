@@ -2,7 +2,7 @@
 
 VVVVVV packaged for the Zig build system.
 
-To build and run the game:
+To build and run the game (requires Zig 0.13.0):
 
 ```
 git clone https://github.com/allyourcodebase/VVVVVV
