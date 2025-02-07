@@ -1,6 +1,7 @@
 .{
     .name = "VVVVVV",
     .version = "0.0.0",
+    .minimum_zig_version = "0.13.0",
     .dependencies = .{
         .VVVVVV = .{
             .url = "https://github.com/TerryCavanagh/VVVVVV/archive/6df7d5df8af6787e3aee1f4df6639b5aa8e3884c.tar.gz",
