@@ -52,8 +52,8 @@ pub fn build(b: *Build) void {
     {
         const sdl = sdl_dep.artifact("SDL2");
         exe.linkLibrary(sdl);
-        const header_tree = sdl.installed_headers_include_tree orelse @panic("?");
-        exe.addIncludePath(header_tree.getDirectory().path(b, "SDL2"));
+        const header_tree = sdl.getEmittedIncludeTree();
+        exe.addIncludePath(header_tree.path(b, "SDL2"));
         exe.linkLibrary(addFAudio(b, target, optimize, sdl));
     }
     exe.linkLibrary(addTinyXml2(b, target, optimize));
@@ -69,7 +69,7 @@ pub fn build(b: *Build) void {
         const out_zip_file = run_zip.addOutputFileArg("data.zip");
         run_zip.addDirectoryArg(makeandplay_dep.path("."));
         b.getInstallStep().dependOn(
-            &b.addInstallBinFile(out_zip_file, "data.zip").step
+            &b.addInstallBinFile(out_zip_file, "data.zip").step,
         );
     }
 
@@ -108,7 +108,7 @@ fn addPhysfs(
         "src/physfs_platform_haiku.cpp",
         "src/physfs_platform_android.c",
     }) catch @panic("OOM");
-    if (target.result.isDarwin()) {
+    if (target.result.os.tag.isDarwin()) {
         files.append("src/physfs_platform_apple.m") catch @panic("OOM");
     }
     lib.addCSourceFiles(.{
@@ -122,7 +122,6 @@ fn addPhysfs(
     lib.linkLibCpp();
     return lib;
 }
-
 
 fn addTinyXml2(
     b: *Build,
@@ -195,7 +194,7 @@ fn addSheenBidi(
         .files = &.{
             "Source/SheenBidi.c",
         },
-        .flags = &.{ "-DSB_CONFIG_UNITY" },
+        .flags = &.{"-DSB_CONFIG_UNITY"},
     });
     lib.installHeadersDirectory(headers_path, ".", .{});
     lib.linkLibCpp();
@@ -281,7 +280,7 @@ fn addLodepng(
     return lib;
 }
 
-const src = [_][]const u8 {
+const src = [_][]const u8{
     "desktop_version/src/BinaryBlob.cpp",
     "desktop_version/src/BlockV.cpp",
     "desktop_version/src/ButtonGlyphs.cpp",
@@ -334,6 +333,6 @@ const src = [_][]const u8 {
     "desktop_version/src/Vlogging.c",
     "desktop_version/src/Xoshiro.c",
 };
-const physfs_src = [_][]const u8 {
+const physfs_src = [_][]const u8{
     "extras/physfsrwops.c",
 };
