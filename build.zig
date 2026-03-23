@@ -3,6 +3,39 @@ const Build = std.Build;
 
 pub fn build(b: *Build) void {
     const target = b.standardTargetOptions(.{});
+
+    if (target.result.os.tag.isDarwin()) {
+        std.log.info("=== macOS SDK diagnostics ===", .{});
+        std.log.info("host os: {s}", .{@tagName(@import("builtin").target.os.tag)});
+        std.log.info("target os: {s}", .{@tagName(target.result.os.tag)});
+
+        // Check what xcode-select --print-path returns (this is what Zig uses to check if SDK is installed)
+        if (std.process.Child.run(.{ .allocator = b.allocator, .argv = &.{ "xcode-select", "--print-path" } })) |result| {
+            std.log.info("xcode-select --print-path exit={}, stdout='{s}'", .{ result.term, std.mem.trimRight(u8, result.stdout, "\r\n") });
+        } else |err| {
+            std.log.info("xcode-select --print-path failed: {}", .{err});
+        }
+
+        // Check what xcrun --sdk macosx --show-sdk-path returns (this is what Zig uses to get the SDK path)
+        if (std.process.Child.run(.{ .allocator = b.allocator, .argv = &.{ "xcrun", "--sdk", "macosx", "--show-sdk-path" } })) |result| {
+            std.log.info("xcrun --show-sdk-path exit={}, stdout='{s}'", .{ result.term, std.mem.trimRight(u8, result.stdout, "\r\n") });
+        } else |err| {
+            std.log.info("xcrun --show-sdk-path failed: {}", .{err});
+        }
+
+        // Check PATH
+        std.log.info("PATH={s}", .{std.posix.getenv("PATH") orelse "(not set)"});
+
+        // Check if the framework dir exists at the expected location
+        if (std.zig.system.darwin.getSdk(b.allocator, &target.result)) |sdk| {
+            const fw_dir = std.fs.path.join(b.allocator, &.{ sdk, "System/Library/Frameworks" }) catch "(OOM)";
+            std.log.info("getSdk returned: {s}", .{sdk});
+            std.log.info("framework dir: {s}", .{fw_dir});
+        } else {
+            std.log.info("getSdk returned null!", .{});
+        }
+    }
+
     const optimize = b.standardOptimizeOption(.{});
 
     const upstream = b.dependency("upstream", .{});
@@ -154,7 +187,6 @@ fn addPhysfs(
     lib.linkLibCpp();
     return lib;
 }
-
 
 fn addTinyXml2(
     b: *Build,
