@@ -49,5 +49,6 @@
     .paths = .{
         "build.zig",
         "build.zig.zon",
+        "mount.zig",
     },
 }

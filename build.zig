@@ -40,6 +40,8 @@ pub fn build(b: *Build) void {
     exe.addCSourceFiles(.{
         .root = upstream.path("."),
         .files = &src,
+        // redirect PHYSFS_mount to our own implementation so we can embedd assets into the binary
+        .flags = &.{"-DPHYSFS_mount=VVVVVV_physfs_mount"},
     });
     exe.addCSourceFiles(.{
         .root = physfs_dep.path("."),
@@ -66,10 +68,38 @@ pub fn build(b: *Build) void {
 
     {
         const zip_exe = zipcmdline_dep.artifact("zip");
-        const run_zip = b.addRunArtifact(zip_exe);
-        const out_zip_file = run_zip.addOutputFileArg("data.zip");
-        run_zip.addDirectoryArg(makeandplay_dep.path("."));
-        b.getInstallStep().dependOn(&b.addInstallBinFile(out_zip_file, "data.zip").step);
+
+        const run_data_zip = b.addRunArtifact(zip_exe);
+        const data_zip_file = run_data_zip.addOutputFileArg("data.zip");
+        run_data_zip.addDirectoryArg(makeandplay_dep.path("."));
+
+        const run_lang_zip = b.addRunArtifact(zip_exe);
+        const lang_zip_file = run_lang_zip.addOutputFileArg("lang.zip");
+        run_lang_zip.addDirectoryArg(upstream.path("desktop_version/lang"));
+
+        const run_fonts_zip = b.addRunArtifact(zip_exe);
+        const fonts_zip_file = run_fonts_zip.addOutputFileArg("fonts.zip");
+        run_fonts_zip.addDirectoryArg(upstream.path("desktop_version/fonts"));
+
+        exe.linkLibrary(b.addLibrary(.{
+            .name = "datazip",
+            .root_module = b.createModule(.{
+                .root_source_file = b.path("mount.zig"),
+                .target = target,
+                .optimize = .ReleaseSmall,
+                .imports = &.{
+                    .{ .name = "data_zip", .module = b.createModule(.{
+                        .root_source_file = data_zip_file,
+                    }) },
+                    .{ .name = "lang_zip", .module = b.createModule(.{
+                        .root_source_file = lang_zip_file,
+                    }) },
+                    .{ .name = "fonts_zip", .module = b.createModule(.{
+                        .root_source_file = fonts_zip_file,
+                    }) },
+                },
+            }),
+        }));
     }
 
     const run_cmd = b.addRunArtifact(exe);
