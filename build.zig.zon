@@ -1,47 +1,48 @@
 .{
-    .name = "VVVVVV",
+    .name = .VVVVVV,
+    .fingerprint = 0x34f87c4d01667ba8,
     .version = "0.0.0",
-    .minimum_zig_version = "0.13.0",
+    .minimum_zig_version = "0.15.2",
     .dependencies = .{
-        .VVVVVV = .{
-            .url = "https://github.com/TerryCavanagh/VVVVVV/archive/6df7d5df8af6787e3aee1f4df6639b5aa8e3884c.tar.gz",
-            .hash = "12205a24de32aa7d0c9857320b6fb5d644b7c7af1d60dff4f5e0257881f9b0c98f3d",
+        .upstream = .{
+            .url = "git+https://github.com/TerryCavanagh/VVVVVV#6df7d5df8af6787e3aee1f4df6639b5aa8e3884c",
+            .hash = "N-V-__8AAH3L2QFaJN4yqn0MmFcyC2-11kS3x68dYN_09eAl",
         },
         .sdl = .{
-            .url = "git+https://github.com/allyourcodebase/SDL#7e4fc30b201d266f197fef4153f7e046bd189a7c",
-            .hash = "1220c57b0bec66a2378e90cd7a79e36f9e7f60c02acca769ab3e6f974d4ef6766418",
+            .url = "git+https://github.com/allyourcodebase/SDL#f0904033f8e7c3e3a5256133bb0eb81287d34db5",
+            .hash = "SDL-2.32.10-JToi3yO3EgE0ZKej6dN4k_lTP8GmSmBGztrX1hyBiepa",
         },
         .physfs = .{
-            .url = "https://github.com/icculus/physfs/archive/bfa7997c671957eb0a340ff1cf3c634e6269904a.tar.gz",
-            .hash = "12206d6eb8b5166a4ab0ae2552c847c6f85cf3400e60dfe3943c526a735dd203dde7",
+            .url = "git+https://github.com/icculus/physfs#bfa7997c671957eb0a340ff1cf3c634e6269904a",
+            .hash = "N-V-__8AAHMhEABtbri1FmpKsK4lUshHxvhc80AOYN_jlDxS",
         },
         .tinyxml2 = .{
-            .url = "https://github.com/leethomason/tinyxml2/archive/e45d9d16d430a3f5d3eee9fe40d5e194e1e5e63a.tar.gz",
-            .hash = "1220937985193cd00baee7d76d588eaca8eb5d015e9b7949567a6370c8810a2187d7",
+            .url = "git+https://github.com/leethomason/tinyxml2#e45d9d16d430a3f5d3eee9fe40d5e194e1e5e63a",
+            .hash = "N-V-__8AAF8fLQCTeYUZPNALrufXbViOrKjrXQFem3lJVnpj",
         },
         .c_hashmap = .{
-            .url = "https://github.com/Mashpoe/c-hashmap/archive/dedf70e0a769bc52a17a36da840d96770fc26d12.tar.gz",
-            .hash = "12204e526203ab02f71541200bf3b6d3196cd18d2bf2289f160f07d43d6ea6acbfe8",
+            .url = "git+https://github.com/Mashpoe/c-hashmap#dedf70e0a769bc52a17a36da840d96770fc26d12",
+            .hash = "N-V-__8AAKhlAABOUmIDqwL3FUEgC_O20xls0Y0r8iifFg8H",
         },
         .sheen_bidi = .{
-            .url = "https://github.com/Tehreer/SheenBidi/archive/e667eb3a63ee704194f8d94834d8e12b18db5b21.tar.gz",
-            .hash = "1220f803c083768789d9e2f123d8d349662b8b01c9db621faf006f4763597ed44da2",
+            .url = "git+https://github.com/Tehreer/SheenBidi#e667eb3a63ee704194f8d94834d8e12b18db5b21",
+            .hash = "N-V-__8AAIgnFAH4A8CDdoeJ2eLxI9jTSWYriwHJ22IfrwBv",
         },
         .faudio = .{
-            .url = "https://github.com/FNA-XNA/FAudio/archive/38e9da7264641c9cc69a80d09082f166d9b8eaf9.tar.gz",
-            .hash = "122074cfa2d5ead7ce2907c81142ba41bb2da74a4996c4f7c418241a05eb72619eba",
+            .url = "git+https://github.com/FNA-XNA/FAudio#38e9da7264641c9cc69a80d09082f166d9b8eaf9",
+            .hash = "N-V-__8AAM7ePQB0z6LV6tfOKQfIEUK6Qbstp0pJlsT3xBgk",
         },
         .lodepng = .{
-            .url = "https://github.com/lvandeve/lodepng/archive/18964554bc769255401942e0e6dfd09f2fab2093.tar.gz",
-            .hash = "1220521ded1568db149ba4bd4e51aef847d31b760f402b6719137c1fa4b67d2c17e9",
+            .url = "git+https://github.com/lvandeve/lodepng#18964554bc769255401942e0e6dfd09f2fab2093",
+            .hash = "N-V-__8AAIAEDgBSHe0VaNsUm6S9TlGu-EfTG3YPQCtnGRN8",
         },
         .zipcmdline = .{
-            .url = "https://github.com/marler8997/zipcmdline/archive/436c68f8993a355f6ef0c65b43fd7d56d06bcedc.tar.gz",
-            .hash = "12203409341d97b9ed71926213814b88c3d3181ea944192278fc73357a2de6ca22dc",
+            .url = "git+https://github.com/marler8997/zipcmdline#a8807944231b46565450504cb7f3146e29e51335",
+            .hash = "zipcmdline-0.0.0-DFii09hmAwAK1TuCE9eIMZANDZRJnodAHOUOCM8pAPO3",
         },
         .makeandplay = .{
             .url = "https://thelettervsixtim.es/makeandplay/data.zip",
-            .hash = "12205532e83dce4f3ad60bf45d9f4386961bdf7d1754404b6714fefaf3e7e6ef18de",
+            .hash = "N-V-__8AADozQgRVMug9zk861gv0XZ9DhpYb330XVEBLZxT-",
         },
     },
 

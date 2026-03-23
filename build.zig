@@ -5,7 +5,7 @@ pub fn build(b: *Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const VVVVVV_dep = b.dependency("VVVVVV", .{});
+    const upstream = b.dependency("upstream", .{});
     const sdl_dep = switch (target.result.os.tag) {
         .linux => b.dependency("sdl", .{
             .target = target,
@@ -28,15 +28,17 @@ pub fn build(b: *Build) void {
 
     const exe = b.addExecutable(.{
         .name = "VVVVVV",
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .target = target,
+            .optimize = optimize,
+        }),
     });
 
     exe.addIncludePath(physfs_dep.path("src"));
     exe.addIncludePath(physfs_dep.path("extras"));
 
     exe.addCSourceFiles(.{
-        .root = VVVVVV_dep.path("."),
+        .root = upstream.path("."),
         .files = &src,
     });
     exe.addCSourceFiles(.{
@@ -52,8 +54,7 @@ pub fn build(b: *Build) void {
     {
         const sdl = sdl_dep.artifact("SDL2");
         exe.linkLibrary(sdl);
-        const header_tree = sdl.installed_headers_include_tree orelse @panic("?");
-        exe.addIncludePath(header_tree.getDirectory().path(b, "SDL2"));
+        exe.addIncludePath(sdl.getEmittedIncludeTree().path(b, "SDL2"));
         exe.linkLibrary(addFAudio(b, target, optimize, sdl));
     }
     exe.linkLibrary(addTinyXml2(b, target, optimize));
@@ -68,9 +69,7 @@ pub fn build(b: *Build) void {
         const run_zip = b.addRunArtifact(zip_exe);
         const out_zip_file = run_zip.addOutputFileArg("data.zip");
         run_zip.addDirectoryArg(makeandplay_dep.path("."));
-        b.getInstallStep().dependOn(
-            &b.addInstallBinFile(out_zip_file, "data.zip").step
-        );
+        b.getInstallStep().dependOn(&b.addInstallBinFile(out_zip_file, "data.zip").step);
     }
 
     const run_cmd = b.addRunArtifact(exe);
@@ -89,13 +88,16 @@ fn addPhysfs(
 ) *Build.Step.Compile {
     const dep = b.dependency("physfs", .{});
     const root = dep.path(".");
-    const lib = b.addStaticLibrary(.{
+    const lib = b.addLibrary(.{
         .name = "physfs",
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .target = target,
+            .optimize = optimize,
+        }),
     });
-    var files = std.ArrayList([]const u8).init(b.allocator);
-    files.appendSlice(&.{
+    var files: std.ArrayList([]const u8) = .{};
+    defer files.deinit(b.allocator);
+    files.appendSlice(b.allocator, &.{
         "src/physfs.c",
         "src/physfs_archiver_dir.c",
         "src/physfs_archiver_unpacked.c",
@@ -108,12 +110,12 @@ fn addPhysfs(
         "src/physfs_platform_haiku.cpp",
         "src/physfs_platform_android.c",
     }) catch @panic("OOM");
-    if (target.result.isDarwin()) {
-        files.append("src/physfs_platform_apple.m") catch @panic("OOM");
+    if (target.result.os.tag.isDarwin()) {
+        files.append(b.allocator, "src/physfs_platform_apple.m") catch @panic("OOM");
     }
     lib.addCSourceFiles(.{
         .root = root,
-        .files = files.toOwnedSlice() catch @panic("OOM"),
+        .files = files.toOwnedSlice(b.allocator) catch @panic("OOM"),
         .flags = &.{
             "-DPHYSFS_SUPPORTS_DEFAULT=0",
             "-DPHYSFS_SUPPORTS_ZIP=1",
@@ -131,10 +133,12 @@ fn addTinyXml2(
 ) *Build.Step.Compile {
     const dep = b.dependency("tinyxml2", .{});
     const root = dep.path(".");
-    const lib = b.addStaticLibrary(.{
+    const lib = b.addLibrary(.{
         .name = "tinyxml2",
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .target = target,
+            .optimize = optimize,
+        }),
     });
     lib.addCSourceFiles(.{
         .root = root,
@@ -157,10 +161,12 @@ fn addCHashmap(
 ) *Build.Step.Compile {
     const dep = b.dependency("c_hashmap", .{});
     const root = dep.path(".");
-    const lib = b.addStaticLibrary(.{
+    const lib = b.addLibrary(.{
         .name = "c-hashmap",
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .target = target,
+            .optimize = optimize,
+        }),
     });
     lib.addCSourceFiles(.{
         .root = root,
@@ -183,10 +189,12 @@ fn addSheenBidi(
 ) *Build.Step.Compile {
     const dep = b.dependency("sheen_bidi", .{});
     const root = dep.path(".");
-    const lib = b.addStaticLibrary(.{
+    const lib = b.addLibrary(.{
         .name = "sheenbidi",
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .target = target,
+            .optimize = optimize,
+        }),
     });
     const headers_path = root.path(b, "Headers");
     lib.addIncludePath(headers_path);
@@ -195,7 +203,7 @@ fn addSheenBidi(
         .files = &.{
             "Source/SheenBidi.c",
         },
-        .flags = &.{ "-DSB_CONFIG_UNITY" },
+        .flags = &.{"-DSB_CONFIG_UNITY"},
     });
     lib.installHeadersDirectory(headers_path, ".", .{});
     lib.linkLibCpp();
@@ -210,15 +218,16 @@ fn addFAudio(
 ) *Build.Step.Compile {
     const dep = b.dependency("faudio", .{});
     const root = dep.path(".");
-    const lib = b.addStaticLibrary(.{
+    const lib = b.addLibrary(.{
         .name = "faudio",
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .target = target,
+            .optimize = optimize,
+        }),
     });
     const include_path = root.path(b, "include");
     lib.addIncludePath(include_path);
-    const header_tree = sdl.installed_headers_include_tree orelse @panic("?");
-    lib.addIncludePath(header_tree.getDirectory().path(b, "SDL2"));
+    lib.addIncludePath(sdl.getEmittedIncludeTree().path(b, "SDL2"));
 
     lib.addCSourceFiles(.{
         .root = root,
@@ -245,10 +254,12 @@ fn addLodepng(
 ) *Build.Step.Compile {
     const dep = b.dependency("lodepng", .{});
     const root = dep.path(".");
-    const lib = b.addStaticLibrary(.{
+    const lib = b.addLibrary(.{
         .name = "lodepng",
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .target = target,
+            .optimize = optimize,
+        }),
     });
     lib.addIncludePath(root);
 
@@ -281,7 +292,7 @@ fn addLodepng(
     return lib;
 }
 
-const src = [_][]const u8 {
+const src = [_][]const u8{
     "desktop_version/src/BinaryBlob.cpp",
     "desktop_version/src/BlockV.cpp",
     "desktop_version/src/ButtonGlyphs.cpp",
@@ -334,6 +345,6 @@ const src = [_][]const u8 {
     "desktop_version/src/Vlogging.c",
     "desktop_version/src/Xoshiro.c",
 };
-const physfs_src = [_][]const u8 {
+const physfs_src = [_][]const u8{
     "extras/physfsrwops.c",
 };
